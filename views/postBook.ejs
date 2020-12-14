@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>COMPOSE</title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+
+
+<script>
+  const onClickHome = async() => {
+    console.log("This is onClickHome function") ;
+    let res = await fetch("http://localhost:3000/home") ;
+    let str = await res.text() ;
+    console.log("Response : ", str) ;
+  }
+
+  const onClickAddBook = async() => {
+    const title= document.getElementById("myform")[0].value;
+    const content= document.getElementById("myform")[1].value;
+    console.log(title);
+
+    
+    console.log("I am in somewhere") ;
+    let option = {
+      method : "POST" , 
+      headers : {
+        "Content-Type" : "application/json"
+      } ,
+      body : JSON.stringify({ 
+        name : title,
+        content : content,
+      }) 
+    } ;
+    let res = await fetch("http://localhost:3000/addBook/add", option) ;
+    let str = await res.text() ;
+    console.log("Response of About Us :", str) ;
+  }
+
+  const openCompose = async () => {
+    
+    var value=await fetch('http://localhost:3000/addBook') ;
+    
+  }
+
+
+</script> 
+
+<body>
+  <div>
+  <nav class="navbar navbar-default">
+    <div class="container">
+      <div class="navbar-header">
+        <p class="navbar-brand" style=>LIBRARY MANAGEMENT SYSTEM</p>
+      </div>
+        <ul class="nav navbar-nav navbar-right">
+          <!-- 6 -->
+          <li id="home" style="cursor: pointer;"><a onclick='onClickHome()'>HOME</a></li>
+          
+          <li id="about" style="cursor: pointer;"><a onclick='onClickAbout()'>ABOUT US</a></li>
+
+          <li id="contact"><a href="/contact">CONTACT US</a></li>
+          <li><a href="/postBook">Compose</a></li>
+
+        </ul>
+    </div>
+  </nav>
+
+
+</div>
+
+
+
+
+  <form  id='myform' style="padding-left: 20%;">
+    <h4 style="padding-bottom: 2px; text-shadow:5px 5px 10px rgb(94, 93, 93);">Book Name</h4>
+      <input type="text" class="form-control" id='name' value="" maxlength="30" placeholder="Add New Book"   style="width: 20%;" required>
+  </br>
+  <h4 style="padding-bottom: 2px; text-shadow:5px 5px 10px rgb(94, 93, 93);">Book Type</h4>
+  <input type="text" class="form-control" id='title'value="" placeholder="Type Of Book" required  style="width: 20%;"><br>
+ <h4 style="padding-bottom: 2px; text-shadow:5px 5px 10px rgb(94, 93, 93);">Author</h4>
+      <input type="text" class="form-control" id='name' value="" maxlength="30" placeholder="Author"   style="width: 20%;" required>
+  </br><h4 style="padding-bottom: 2px; text-shadow:5px 5px 10px rgb(94, 93, 93);">Rent On week</h4>
+  <input type="text" class="form-control" id='name' value="" maxlength="10" placeholder="Rent"   style="width: 20%;" required>
+  <button type="submit" onclick="onClickAddBook()" class="btn btn-primary" style="margin-left: 15%; margin-top: 5px;">proced</button>
+  
+  </form>
+
+
+
+
+
+
+
+</body>
+</html>
