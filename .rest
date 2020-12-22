@@ -23,3 +23,6 @@ Content-Type: application/json
     "username" : "p@1.com",
     "password" : "123"
 }
+###
+GET http://localhost:3000/user
+Authorization: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmZDc3ODFhNzg3ZDkzM2U1MDNiNTliMCIsImlhdCI6MTYwNzk1NzE4OX0.548pbI0HS_oPmVVr9X9BSs2l24ofUp4vETGnNPVLHuU'

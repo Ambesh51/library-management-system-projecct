@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 
 app.set('view engine', 'ejs');
 app.use(express.static("public"));
-
+var keyvalue;
 
 // const AdminEmailId= sharamambeshcse@gmail.com;
 // const AdminPasswords = 1234567890;
@@ -43,10 +43,10 @@ const AdminSchema = new Schema({
 });
 const Admin = Model("Admin", AdminSchema);
 
-
 const userAuth = async(req, res, next) =>{
     console.log('This is a middleware function') ;
-    const header = req.headers.authorization  ;
+    // const token = req.params.token ;
+    const header = `Bearer ${token}`  ;
     //Bearer token => ['Bearer', 'token']
     console.log('header : ', header) ;
     try{
@@ -54,9 +54,12 @@ const userAuth = async(req, res, next) =>{
             res.send("No authorization header found ") ;
         }
         const token = header.split(' ')[1] ;
+        console.log(token.slice(0, token.length-1)) ;
         console.log(token) ;
-        jwt.verify(token, JWT_SECRET, (err, user) => {
+        jwt.verify(token.slice(0, token.length-1), JWT_SECRET, (err, user) => {
             console.log('user : ', user) ;
+            req.user=user;
+            console.log(req.user);
             if(err){
                 return console.log('here is some error : ', err) 
             }
@@ -80,6 +83,36 @@ app.get('/testing', userAuth, (req, res) => {
     console.log('This is testing api') ;
 }) ;
 
+
+
+
+//users API                                                    
+
+app.get("/user",(req, res)=>{
+    console.log('This i s testing api') ;
+  
+    
+   // console.log('finally' ,req.user)
+   // console.log(req.user)
+   // var userID=req.user.id;
+     
+
+     
+    
+     Book.find({}, function(err, result){
+        //console.log(result);
+        console.log(result);
+        res.render("user",{
+        Posts:result
+       });
+    //   res.json({
+    //       books : result
+          
+    //   })
+     
+    });
+});   
+
 app.post('/addAdmin', async(req, res) => {
     console.log('req.body : ', req.body) ;
     const {email, password} = req.body ;
@@ -95,17 +128,26 @@ app.post('/addAdmin', async(req, res) => {
     console.log('New admin successfully created') ;
 })
 
+
+
+
+
 //user
 const UserSchema = new Schema({
+    name:String,
     email: String,
     password: String
+    
+    
+
 });
 const user = Model("user", UserSchema);
 
 //book
 const BookSchema = new Schema({
     title: String,
-    content: String
+    content: String,
+    userDetails:[UserSchema]
 });
 const Book = Model("Book", BookSchema);
 
@@ -146,15 +188,19 @@ app.post("/register", (req, res) => {
 
 
 //login User
-app.get("/login", (req, res) => {
-    res.render("login");
+app.get("/login", (req, res) => {   
+     res.render("login");
 });
 
 //user login check id password
 app.post("/login", async (req, res) => {
 
+    console.log('req.data : ', req.body) ;
+
     const username = req.body.username;
     const password = req.body.password;
+    console.log('username',username);
+    // const token = req.body.token ;
 
     const foundUser = await user.findOne({ email: username });
     if (!foundUser) {
@@ -168,27 +214,16 @@ app.post("/login", async (req, res) => {
 
     const token = await jwt.sign({id : foundUser._id}, JWT_SECRET) ;
     console.log('This is my login token : ', token) ;
-    res.json({token})
-    // res.redirect("/user");
-
-
-    // user.findOne({ email: username }, function (err, foundUser) {
-    //     if (err) {
-    //         console.log(err);
-    //     }
-    //     else {
-    //         if (foundUser) {
-    //             bcrypt.compare(password, foundUser.password, function (err, result) {
-    //                 if (err) {
-    //                     return console.log(err);
-    //                 }
-
-    //                 res.redirect("/userHome");
-
-    //             });
-    //         }
-    //     }
-    // });
+    //res.json({token})
+    
+    //const localvariable = localStorage.myvalue=token;
+    // req.headers.authorization = token ;
+        // res.redirect(`//$user{token}`);
+    console.log('I am here') ;
+    res.redirect("/user");
+    // res.json({
+    //     token
+    // })
 });
 
 //admin login
@@ -209,6 +244,7 @@ app.post("/adminlogin", async (req, res) => {
         let isVerified = await bcrypt.compare(AdminPassword, foundAdmin.password);
         if (!isVerified) {
             return console.log("Invalid Password")
+            
         }
         //
         res.redirect("/admin");
@@ -225,8 +261,7 @@ app.get("/adminlogin", (req, res) => {
                                                  
                                                          //admin APIS
 //home page admin
-app.get("/admin", function (req, res) {
-
+app.get("/admin" ,function (req, res) {
        
     Book.find({}, function (err, result) {   //before any method of moongoose we use document variable
         let posts = result;
@@ -238,7 +273,7 @@ app.get("/admin", function (req, res) {
 
 });
 
-//show books
+//add books
 app.get("/addBook", (req, res) => {
     console.log('Something isyy') ;
     res.render("postBook");
@@ -269,33 +304,25 @@ app.get("/user/:BookId", async(req, res) => {
   var bookId= await Book.findById(Id);
   console.log(bookId.title);
   res.render("userBook",{
-      posts:bookId
+     posts:bookId
     });
 
 
 
 });
 
-//users API                                                    
-
-app.get("/user", (req, res)=>{
-    
-    Book.find({}, function(err, result){
-        //console.log(result);
-      let posts= result;
-      res.render("user",{
-          posts:posts
-        });
-    });
-});                                              
 
 
 
 
 //Book Apis
-app.get("/userBook/:buy", (req, res)=>{
+app.get("/userBook/:buy", async(req, res)=>{
     let bookRentId = req.params.buy;
-    console.log(bookRentId);
+    var name=await Book.findById(bookRentId);
+    //console.log('bookname',bookRentId);
+        res.render("buyForm",{
+            BookId:name
+        });
 
 
 });
@@ -308,6 +335,11 @@ app.post('/aboutUS', (req, res) => {
     res.send("Successfully triggered");
 });
 
+
+app.post("/buyBook", (req, res)=>{
+    var BookTitle = req.body.username;
+console.log(BookTitle);
+});
 
 app.listen(3000, () => {
     return console.log("server has started");

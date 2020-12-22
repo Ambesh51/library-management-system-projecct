@@ -7,33 +7,7 @@
   <meta charset="utf-8">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" href="/css/styles.css">
-  <script>
-    const onClickHome = async () => {
-      console.log("This is onClickHome function");
-      let res = await fetch("http://localhost:3000/homeStd");
-      let str = await res.json();
-      console.log("Response : ", str);
-    }
 
-    const onClickAbout = async () => {
-
-
-      console.log("I am in somewhere");
-      let option = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: "Prasheet",
-          year: "3rd"
-        })
-      };
-      let res = await fetch("http://localhost:3000/aboutUS", option);
-      let str = await res.text();
-      console.log("Response of About Us :", str);
-    }
-  </script>
 
 <body>
   <div>
@@ -54,23 +28,86 @@
         </ul>
       </div>
     </nav>
+    <div class="row d-flex justfy-content-center" id="books">
 
+    </div>
 
   </div>
+  <div class="card">
+    
+<%Posts.forEach(function(post){%>
+  
+    <h1><%= post.title %></h1>
+    <p><%= post.content %></p>
+    <a href="/user/<%=post._id%>">See More </a>
+   
+   
 
-
-
-<% for ( let i = (posts.length-1); i >= 0 ; i--) {  %>
-<div class="card">
-  <h1><%= posts[i].title %></h1>
-
- 
-  <a href="/user/<%=posts[i]._id%>">Read More..</a>
- 
-  <p><%= posts[i].content %></p><br>
-
+<%})%>
 </div>
-<% } %>
+
+
+
+
+
+
+
+
+
+
+
+
+  <!-- <script>
+
+
+    (async () => {
+      console.log('This is osmething new ');
+      const books= await (await fetch("http://localhost:3000/user")).json();
+      
+
+      console.log('book : ', books);
+
+      console.log('Books outseid : ', books);
+      for (let book of books.books) {
+        console.log('each book : ', book);
+        const body = `
+      <div class="card">
+        <h1>${book.title}</h1>  //book._id
+        <p>${book.content}</p>
+      </div>
+    ` ;
+  
+        document.getElementById('books').innerHTML = (body);
+      }
+    })() -->
+
+      <!-- // const onClickHome = async () => {
+      //   console.log("This is onClickHome function");
+      //   let res = await fetch("http://localhost:3000/homeStd");
+      //   let str = await res.json();
+      //   console.log("Response : ", str);
+      // }
+
+      // const onClickAbout = async () => {
+
+
+      //   console.log("I am in somewhere");
+      //   let option = {
+      //     method: "POST",
+      //     headers: {
+      //       "Content-Type": "application/json"
+      //     },
+      //     body: JSON.stringify({
+      //       name: "Prasheet",
+      //       year: "3rd"
+      //     })
+      //   };
+      //   let res = await fetch("http://localhost:3000/aboutUS", option);
+      //   let str = await res.text();
+      //   console.log("Response of About Us :", str);
+      // } -->
+  <!-- </script> -->
+
 
 
 
